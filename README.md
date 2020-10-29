@@ -1,2 +1,12 @@
 # FE595_SentimentSorting
 HW#3 for FE595
+
+User Instructions
+
+This assignment is composed of three scripts, which are designed to help the user gauge the best and worst business ideas, based on sentiment analysis, as well as return the most commonly used words from a column of business descriptions. 
+
+The first script is used to aggregate several different data file types, specifically .csv and .txt files. In the text file, the data format is composed of a single list, which is then transformed into a 2-column dataframe using pandas and saved in .csv format. It is highly advised that, when utilizing this function, you scrape your web data and leave it as a single list of elements. After all of the text files have been transformed into csv file format, please note that all of the csv files are stored in a separate file path - this is done intentionally in order to ensure that the concatenation process runs smoothly. All of your csv files should have the same dimensions and column names; the first part of the script will perform this task. Once all files have been converted in .csv format, the script will then concatenate all csv files into a single file.
+
+The second script primarily uses the nltk package to perform sentiment analysis. However, before this is done, it is necessary to clean and tokenize the data column that will be used to drive the sentiment scores. In the case of this example, is is the "Purpose" column. However, if you are interested in performing sentiment analysis on a different data set and format, then please adjust the data inputs accordingly. In addition, we created a manual pre-processing function designed to clean that data. Although this is not an exhaustive list, it was sufficient clean our dataset. Other rules, such as the removal of html markers, may be needed depending on user needs. Finally, please run the first script before running this one, since it is dependent on the creation and file location of the output of the first script.
+
+Finally, the third script is a fairly straightforward word count process. It is designed to be executed after the first and second scripts have run. It accounts for some spacing and noise removal as well, and like the second script, is dependent on the output of the first script. The output was restricted to only ten results; however, please note that this can be adjusted depending on the user's needs.
