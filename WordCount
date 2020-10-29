@@ -1,0 +1,16 @@
+#import packages, set directory
+from collections import Counter
+import pandas as pd
+import os
+
+def WordCount(topCounts):
+
+    os.chdir("/mnt/c/Users/shira/Desktop/Stevens Fall 2020/FE 595/595assignment3")
+    print(os.getcwd())
+
+    scraped_df = pd.read_csv('csv_all_standard.csv')
+    highest_counts = Counter(" ".join(scraped_df["Purpose"]).split()).most_common(topCounts)
+    print(highest_counts)
+
+if __name__ == "__main__":
+    WordCount(10)
