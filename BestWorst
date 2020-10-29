@@ -1,0 +1,85 @@
+#import packages, set directory
+import nltk
+import pandas as pd
+import os
+import glob
+import numpy as np
+import re
+import string
+
+from nltk import pos_tag
+from nltk import sent_tokenize, word_tokenize
+from nltk.stem.snowball import SnowballStemmer
+from nltk.stem.wordnet import WordNetLemmatizer
+from nltk.corpus import stopwords
+from nltk.corpus import wordnet
+from nltk.tokenize import WhitespaceTokenizer
+
+def bestWorst(combined_filepath, returns):
+
+    os.chdir(combined_filepath)
+    print(os.getcwd())
+
+    scraped_df = pd.read_csv('csv_all_standard.csv')
+    stop = nltk.corpus.stopwords.words('english')
+
+#preprocessing data which involves several manual transformations
+    def pos_tagging(pos_tag):
+        if pos_tag.startswith('J'):
+            return wordnet.ADJ
+        elif pos_tag.startswith('V'):
+            return wordnet.VERB
+        elif pos_tag.startswith('N'):
+            return wordnet.NOUN
+        elif pos_tag.startswith('R'):
+            return wordnet.ADV
+        else:
+            return wordnet.NOUN
+
+    def preprocess(_):
+        # lowercase
+        _ = _.lower()
+
+        # remove punctuation and tokenize
+        _ = [i.strip(string.punctuation) for i in _.split(" ")]
+
+        # remove noise/numbers
+        _ = [i for i in _ if not any(c.isdigit() for c in i)]
+
+        # remove stop words
+        _ = [x for x in _ if x not in stop]
+
+        # remove any empty tokens
+        _ = [t for t in _ if len(t) > 0]
+
+        # pos tagging
+        pos_tags = pos_tag(_)
+
+        # lemmatize
+        _ = [WordNetLemmatizer().lemmatize(t[0], pos_tagging(t[1])) for t in pos_tags]
+
+        # remove words with only one letter
+        _ = [t for t in _ if len(t) > 1]
+
+        # add back to list
+        _ = " ".join(_)
+        return(_)
+
+    scraped_df["Purpose"] = scraped_df["Purpose"].apply(lambda x: preprocess(x))
+
+    from nltk.sentiment.vader import SentimentIntensityAnalyzer
+    #nltk.download('vader_lexicon')
+
+    sid = SentimentIntensityAnalyzer()
+    scraped_df["sentiments"] = scraped_df["Purpose"].apply(lambda x: sid.polarity_scores(x))
+    scraped_df = pd.concat([scraped_df.drop(['sentiments'], axis=1), scraped_df['sentiments'].apply(pd.Series)], axis=1)
+
+    worst_idea = scraped_df.sort_values('neg', ascending=False)
+    print(worst_idea.head(returns))
+
+    best_idea = scraped_df.sort_values('pos', ascending=False)
+    print(best_idea.head(returns))
+
+
+if __name__ == "__main__":
+    bestWorst("/mnt/c/Users/shira/Desktop/Stevens Fall 2020/FE 595/595assignment3", 5)
