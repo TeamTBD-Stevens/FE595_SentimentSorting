@@ -70,10 +70,12 @@ def bestWorst(combined_filepath, returns):
     from nltk.sentiment.vader import SentimentIntensityAnalyzer
     #nltk.download('vader_lexicon')
 
+#perform sentiment analysis, add scores as columns to dataframe 
     sid = SentimentIntensityAnalyzer()
     scraped_df["sentiments"] = scraped_df["Purpose"].apply(lambda x: sid.polarity_scores(x))
     scraped_df = pd.concat([scraped_df.drop(['sentiments'], axis=1), scraped_df['sentiments'].apply(pd.Series)], axis=1)
 
+#rank top 5 best and worst business ideas based on pos/neg sentiment scores
     worst_idea = scraped_df.sort_values('neg', ascending=False)
     print(worst_idea.head(returns))
 
